@@ -22,8 +22,6 @@ The package can be easily installed using `devtools` in [R](https://www.r-projec
 
 `library(ClimBayes)` 
 
-For help, type `?ClimBayes` in the [R](https://www.r-project.org/) command line. Please also find the package requirements at `?ClimBayes` or in the `DESCRITPION` file of this repository.
-
 Please also check for new releases of the package and the latest version at Zenodo. 
 
 If you'd like to contribute to the package, you might want to clone it (type `git clone https://github.com/paleovar/ClimBayes.git` in the terminal) and open the `.Rproj` in `RStudio`. Please don't hesitate to report issues, bugs, etc. to the authors (maybritt.schillinger(at)iup.uni-tuebingen.de, beatrice.ellerhoff(at)student.uni-tuebingen.de).
