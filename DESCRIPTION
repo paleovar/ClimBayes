@@ -1,0 +1,43 @@
+Package: ClimBayes
+Type: Package
+Title: What the Package Does (Title Case)
+Version: 0.1.0
+Author: Who wrote it
+Maintainer: The package maintainer <yourself@somewhere.net>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    batchmeans,
+    coda,
+    cowplot,
+    doParallel,
+    doRNG,
+    dplyr,
+    english,
+    foreach,
+    ggExtra,
+    ggplot2,
+    magrittr,
+    mvtnorm,
+    ncdf4,
+    parallel,
+    Rcpp,
+    Rfast,
+    rlang,
+    scales,
+    tibble,
+    tidyr,
+    zoo
+RoxygenNote: 7.1.2
+LinkingTo: 
+    Rcpp
+Depends: 
+    doRNG (>= 1.8.2),
+    R (>= 2.10)
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Roxygen: list(markdown = TRUE)

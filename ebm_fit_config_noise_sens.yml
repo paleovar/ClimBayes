@@ -1,0 +1,148 @@
+# This is the configuration file for the ... package
+# In general, this configuration does not need any editing to use the package
+#
+# Note: Please enter all numbers as floats, e.g. for 1 enter 1.0
+# Further, yaml DOES NOT support scienctific notation,
+# e.g. for "1e3" enter "1000.0" instead
+
+# experimental configuration for trying out stuff
+noise_sens:
+  # specificiation of additional EBM parameters
+  # can either be 'estimate' or 'fixed'
+  # if 'estimate', then the value is estimated via the Bayesian approach
+  # if 'fixed', then the default values are taken from parameter_defaults
+  parameters:
+    # heat capacity
+    Cap: fixed
+    # initial forcing parameter
+    F0: estimate
+    # weights between feedback parameters
+    weights: estimate
+
+  # default values for parameters
+  # necessary if parameters above are set to 'fixed'
+  parameter_defaults:
+    F0: 0
+    Cap: 10.1
+    two_box:
+      weights:
+        - 0.7
+    three_box:
+      weights:
+        - 0.3
+        - 0.6
+
+  # parameters to specify the noise in the likelihood distribution
+  noise:
+    # type of noise
+    # can be 'ar1_iterative', 'ar1_fixed', 'white' or 'white_iterative'
+    type: ar1_fixed
+
+    # if type = 'ar1_fixed', specify standard deviation of white noise,
+    # standard deviation of ar1 noise and correlation parameters
+    ar1_fixed:
+      SD_white: 0.01
+      SD_ar1: 0.1
+      lambda:
+        one_box:
+        - 0.3
+        two_box:
+        - 0.07
+        - 1.5
+      weights:
+        two_box:
+        - 0.8
+
+  # specification of prior distributions
+  priors:
+    # type, one of 'uniform' or 'beta'
+    type: uniform
+    # if type = 'beta', specify shape here
+    beta_shape1: NA
+    beta_shape2 : NA
+    # bounds for prior intervals
+    one_box:
+      lambda1_bounds:
+        - 0.001
+        - 1.0
+    two_box:
+      lambda1_bounds:
+        - 0.001
+        - 0.1
+      lambda2_bounds:
+        - 0.1
+        - 5.0
+    three_box:
+      lambda1_bounds:
+        - 0.001
+        - 0.01
+      lambda2_bounds:
+        - 0.01
+        - 0.1
+      lambda3_bounds:
+        - 0.1
+        - 5.0
+    four_box:
+      lambda1_bounds:
+        - 0.001
+        - 0.01
+      lambda2_bounds:
+        - 0.01
+        - 0.1
+      lambda3_bounds:
+        - 0.1
+        - 1.0
+      lambda4_bounds:
+        - 1.0
+        - 5.0
+    F0_bounds:
+      - -2.0
+      - 2.0
+    # prior bounds for heat capacity
+    # only required if the above default value is changed to 'estimate'
+    Cap_bounds:
+      - 5.0
+      - 15.0
+
+  # specification for metropolis-hastings algorithm
+  metropolis_hastings:
+    # number of samples
+    n_samples: 5000.0
+    # proposal variance
+    # If 'auto', then determined automatically from prior intervals
+    # If 'default', then values for lambda are chosen from defaults below
+    proposal_variance: default
+
+    proposal_variance_defaults:
+      lambda:
+        one_box:
+          - 0.0001
+        two_box:
+          - 0.00001
+          - 0.0001
+      weights: 0.001
+      F0: 0.01
+      Cap: 0.1
+    # auto
+    # weighting factor in adaptive covariance scheme, between 0 and 1
+    alpha: 0.95
+    # specifiy burn-in period
+    # the number of samples discarded in each chain is
+    # n_samples / burn_in_proportion
+    burn_in_proportion: 2.0
+    # number of chains
+    n_chains: 2.0
+    # should sampling continue until performance criteria are met?
+    dynamic_termination: FALSE
+    # number of additional samples to compute until convergence is evaluated
+    # again
+    n_samples_dynamic: 1000.0
+    # error tolerance in dynamic termination, between 0 and 1
+    error_tolerance: 0.05
+    # threshold for Gelman-Rubin diagnostic
+    gelman_diagnostic: 1.05
+
+  # additional technical parameters
+  extra:
+    parallel: FALSE
+    return_solution_matrix: TRUE
