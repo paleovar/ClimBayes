@@ -12,17 +12,19 @@ Please find the **`tutorial`-vignette** which explains how to perform the model 
 
 Please see the `./license.md` for terms of use. 
 
-## Installation
+## Installation in RStudio
 
 The package can be easily installed using `devtools` in [R](https://www.r-project.org/):
 
 `require(devtools)` 
 
-`devtools::install_github("paleovar/ClimBayes")` 
+`cred <- git2r::cred_user_pass(rstudioapi::askForPassword("username"), rstudioapi::askForPassword("Password"))` 
+
+`devtools::install_git("https://github.com/paleovar/ClimBayes", credentials = cred, build_vignettes = TRUE)`
 
 `library(ClimBayes)` 
 
-Please also check for new releases of the package and the latest version at Zenodo. 
+Please use your personal github token as password. 
 
 If you'd like to contribute to the package, you might want to clone it (type `git clone https://github.com/paleovar/ClimBayes.git` in the terminal) and open the `.Rproj` in `RStudio`. Please don't hesitate to report issues, bugs, etc. to the authors (maybritt.schillinger(at)iup.uni-tuebingen.de, beatrice.ellerhoff(at)student.uni-tuebingen.de).
 
