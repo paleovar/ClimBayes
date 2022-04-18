@@ -1,6 +1,6 @@
 # Readme
 
-This is the repository of the **`ClimBayes`** package (simple CLIMate models from a BAYESian perspective) in [R](https://www.r-project.org/). It provides data and code to perform **Bayesian inference of climate parameters using multi-box energy balance models (EBMs)**. Please find our submitted manuscript ... for additional documentation of the package.
+This is the repository of the **`ClimBayes`** package (simple CLIMate models from a BAYESian perspective) in [R](https://www.r-project.org/). It provides data and code to perform **Bayesian inference of climate parameters using multi-box energy balance models (EBMs)**. This is a spacy-internal release for now :)
 
 The primary goal of **`ClimBayes`** is to provide a **versatile and powerful tool for climate parameter estimation** from global mean temperature data. To this end, it combines a Bayesian approach with an N-box simple climate model. To estimate the best fit to the observations, the climate drivers (i.e. radiative forcing) and the temperature response are required as inputs. By combining these inputs with prior information on the model's parameters via Bayes theorem, reliable posterior distribution of the model's parameter can be inferred and used to study the forced temperature response across temporal scales.  
 
@@ -46,6 +46,4 @@ We also thank the [R Core team](https://www.R-project.org/) and the developers o
 
 The development of this package has been supported by funds of the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation), [Project No. 395588486](https://gepris.dfg.de/gepris/projekt/395588486?context=projekt&task=showDetail&id=395588486&), by the [PalMod](https://www.palmod.de/) project (subproject no. 01LP1926C), the [Heinrich-Böll-Stiftung](https://boell.de/), and the [Studienstiftung des deutschen Volkes](https://www.studienstiftung.de/). The study benefited from discussions within the [CVAS](https://pastglobalchanges.org/science/wg/cvas/intro) working group, a working group of the [Past Global Changes (PAGES)](https://pastglobalchanges.org/pal) project. We thank the members of the [Earth's climate and environmental dynamics](https://www.iup.uni-heidelberg.de/en/research/paleoclimate-dynamics) and the [SPACY](https://uni-tuebingen.de/climatology/) groups for discussion at different stages of the package development. 
 
-The authors,
-
-*Maybritt Schillinger & Beatrice Ellerhoff, April 2022*
+*Maybritt Schillinger & Beatrice Ellerhoff*
