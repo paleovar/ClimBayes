@@ -1,5 +1,7 @@
 # Readme
 
+<img src=https://user-images.githubusercontent.com/54356140/171158278-b506f752-6b17-4084-bdfe-c426261c4cfa.png width="144" height="121" >
+
 This is the repository of the **`ClimBayes`** package (simple CLIMate models from a BAYESian perspective) in [R](https://www.r-project.org/). It provides data and code to perform **Bayesian inference of climate parameters using multi-box energy balance models (EBMs)**. This is a spacy-internal release for now :)
 
 The primary goal of **`ClimBayes`** is to provide a **versatile and powerful tool for climate parameter estimation** from global mean temperature data. To this end, it combines a Bayesian approach with an N-box simple climate model. To estimate the best fit to the observations, the climate drivers (i.e. radiative forcing) and the temperature response are required as inputs. By combining these inputs with prior information on the model's parameters via Bayes theorem, reliable posterior distribution of the model's parameter can be inferred and used to study the forced temperature response across temporal scales.  
