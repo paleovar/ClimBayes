@@ -50,12 +50,12 @@ plot_two_fits <- function(res_list1, res_list2,
   obs_data['temp_lower'] <- temp_vals
 
   results1 <- tibble::tibble(grid = obs_data$grid,
-                                 temp = res_list1$posteriors$model_fit$median,
+                                 temp = res_list1$posteriors$model_fit$mean,
                                  temp_lower = res_list1$posteriors$model_fit$lower_quant,
                                  temp_upper = res_list1$posteriors$model_fit$upper_quant,
                                  type = label1)
   results2 <- tibble::tibble(grid = obs_data$grid,
-                                 temp = res_list2$posteriors$model_fit$median,
+                                 temp = res_list2$posteriors$model_fit$mean,
                                  temp_lower = res_list2$posteriors$model_fit$lower_quant,
                                  temp_upper = res_list2$posteriors$model_fit$upper_quant,
                                  type = label2)

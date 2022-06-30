@@ -133,7 +133,7 @@ plot_fit <- function(res_list,
   n_years = res_list$input_params$n_years
 
   results_model_fit <- tibble::tibble(grid = 0:(n_years - 1),
-                                 temp = res_list$posteriors$model_fit$median,
+                                 temp = res_list$posteriors$model_fit$mean,
                                  temp_lower = res_list$posteriors$model_fit$lower_quant,
                                  temp_upper = res_list$posteriors$model_fit$upper_quant,
                                  type = "Model est.")
