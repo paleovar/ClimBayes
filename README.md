@@ -2,13 +2,13 @@
 
 <img src=https://user-images.githubusercontent.com/54356140/171158278-b506f752-6b17-4084-bdfe-c426261c4cfa.png width="144" height="121" >
 
-This is the repository of the **`ClimBayes`** package (simple CLIMate models from a BAYESian perspective) in [R](https://www.r-project.org/). It provides data and code to perform **Bayesian inference of climate parameters using multi-box energy balance models (EBMs)**. This is a spacy-internal release for now :)
+This is the repository of the **`ClimBayes`** package (simple CLIMate models from a BAYESian perspective) in [R](https://www.r-project.org/). It provides data and code to perform **Bayesian inference of climate parameters using multi-box energy balance models (EBMs)**. Please see the manuscript M. Schillinger et al.  "Separating internal and externally-forced contributions to global temperature variability using a Bayesian stochastic energy balance framework" (2022), submitted to Chaos and available as preprint http://arxiv.org/abs/2206.14573, for example application and further documentation of the ClimBayes package.
 
 The primary goal of **`ClimBayes`** is to provide a **versatile and powerful tool for climate parameter estimation** from global mean temperature data. To this end, it combines a Bayesian approach with an N-box simple climate model. To estimate the best fit to the observations, the climate drivers (i.e. radiative forcing) and the temperature response are required as inputs. By combining these inputs with prior information on the model's parameters via Bayes theorem, reliable posterior distribution of the model's parameter can be inferred and used to study the forced temperature response across temporal scales.  
 
 Please find the **`tutorial`-vignette** which explains how to perform the model fit using the HadCRUT4 oberservations and PMIP3 forcing data sets as an example. The vignette also describes how the package can be used to generate synthetic temperature timeseries from the N-box model given arbitrary forcing. The **`config_file`-vignette** explains how to include and document own data sets using `*config.yml`. 
 
-**Authors:** Maybritt Schillinger, Beatrice Ellerhoff, Kira Rehfeld, Robert Scheichl
+**Authors:** Maybritt Schillinger, Beatrice Ellerhoff, Robert Scheichl, Kira Rehfeld
 
 **Responsibility for this repository:** Maybritt Schillinger ([@m-schillinger](https://github.com/m-schillinger)) and Beatrice Ellerhoff ([@bellerhoff](https://github.com/bellerhoff))
 
@@ -20,9 +20,7 @@ The package can be easily installed using `devtools` in [R](https://www.r-projec
 
 `require(devtools)` 
 
-`cred <- git2r::cred_user_pass(rstudioapi::askForPassword("username"), rstudioapi::askForPassword("Password"))` 
-
-`devtools::install_git("https://github.com/paleovar/ClimBayes", credentials = cred, build_vignettes = TRUE)`
+`devtools::install_git("https://github.com/paleovar/ClimBayes")`
 
 `library(ClimBayes)` 
 
