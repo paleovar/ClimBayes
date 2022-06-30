@@ -24,7 +24,7 @@ The package can be easily installed using `devtools` in [R](https://www.r-projec
 
 `library(ClimBayes)` 
 
-Please use your personal github token as password. 
+Please also find the package requirements in the `DESCRITPION` file of this repository.
 
 If you'd like to contribute to the package, you might want to clone it (type `git clone https://github.com/paleovar/ClimBayes.git` in the terminal) and open the `.Rproj` in `RStudio`. Please don't hesitate to report issues, bugs, etc. to the authors (maybritt.schillinger(at)iup.uni-tuebingen.de, beatrice.ellerhoff(at)student.uni-tuebingen.de).
 
