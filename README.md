@@ -35,7 +35,7 @@ Our repository contains all relevant code and data of the `ClimBayes`-package. T
 ## Data references
 
 As exemplary data sets, the `ClimBayes` package loads data from:
-- **Morice, C. P., J. J. Kennedy, N. A. Rayner, and P. D. Jones**, *Quantifying uncertainties in global and regional temperature change using an ensemble of observational estimates: The HadCRUT4 dataset*, Geophysical Research (2012)
+- **C.P. Morice et al.**, *An updated assessment of near-surface temperature change from 1850: the HadCRUT5 dataset*, Journal of Geophysical Research (Atmospheres) (in press)
 - **G. A. Schmidt et al.**, *Climate forcing reconstructions for use in PMIP simulations of the Last Millennium (v1.1)*, Geoscientific Model Development (2012)
 
 ## Acknowledgements
