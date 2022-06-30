@@ -1,12 +1,11 @@
 Package: ClimBayes
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Bayesian inference of climate parameters using multi-box energy balance models
 Version: 0.1.1
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Maybritt Schillinger, Beatrice Ellerhoff, Robert Scheichl, Kira Rehfeld
+Maintainer: Maybritt Schillinger <maybritt.schillinger@stat.math.ethz.ch>
+Description: The primary goal of ClimBayes is to provide a versatile and powerful tool for climate parameter estimation from global mean temperature data. To this end, it combines a Bayesian approach with an N-box simple climate model. To estimate the best fit to the observations, the climate drivers (i.e. radiative forcing) and the temperature response are required as inputs. By combining these inputs with prior information on the model's parameters via Bayes theorem, reliable posterior distribution of the model's parameter can be inferred and used to study the forced temperature response across temporal scales.
+License: CC BY-SA 4.0
 Encoding: UTF-8
 LazyData: true
 Imports: 
