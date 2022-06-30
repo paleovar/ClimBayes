@@ -4,8 +4,13 @@
 \alias{ebm_projection}
 \title{Generate temperature projections from EBM fit and additional forcing series.}
 \usage{
-ebm_projection(res_list, forc, start_year = NULL, end_year = NULL,
-  cred_int = FALSE)
+ebm_projection(
+  res_list,
+  forc,
+  start_year = NULL,
+  end_year = NULL,
+  cred_int = FALSE
+)
 }
 \arguments{
 \item{res_list}{Object of class \code{ebm_fit_result}}
@@ -29,7 +34,7 @@ In addition to the entries of \code{ebm_fit_result} (see documentation there), i
 \item \code{projection}
 \itemize{
 \item \code{input}: list with entry \code{forc_vals}
-\item \code{result}: list with \code{median, mean, lower_quant, upper_quant}
+\item \code{result}: list with \verb{median, mean, lower_quant, upper_quant}
 }
 }
 }

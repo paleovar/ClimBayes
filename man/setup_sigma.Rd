@@ -2,13 +2,24 @@
 % Please edit documentation in R/RcppExports.R
 \name{setup_sigma}
 \alias{setup_sigma}
-\title{test}
+\title{Helper function to set up covariance matrix}
 \usage{
 setup_sigma(N, lambda, weights, deltat, noise_factor, o)
 }
 \arguments{
-\item{N}{...}
+\item{N}{number of years}
+
+\item{lambda}{vector of lambda values (one for each box)}
+
+\item{weights}{vector of weights values (one for each box)}
+
+\item{deltat}{time step in years (usually 1)}
+
+\item{noise_factor}{constant scaling factor for AR(1) noise,
+related to (see sx_from_sd and sd_from_sx)}
+
+\item{o}{SD of white noise}
 }
 \description{
-test
+Helper function to set up covariance matrix
 }

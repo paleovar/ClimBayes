@@ -4,9 +4,16 @@
 \alias{plot_joint_posterior}
 \title{Plot function for joint posteriors}
 \usage{
-plot_joint_posterior(res_list, var1 = "lambda1", var2 = "lambda2",
-  xlim = NA, ylim = NA, prior_bounds_as_lim = FALSE,
-  text_size = 10, colourbar_breaks = NA)
+plot_joint_posterior(
+  res_list,
+  var1 = "lambda1",
+  var2 = "lambda2",
+  xlim = NA,
+  ylim = NA,
+  prior_bounds_as_lim = FALSE,
+  text_size = 10,
+  colourbar_breaks = NA
+)
 }
 \arguments{
 \item{res_list}{Result of fit.}

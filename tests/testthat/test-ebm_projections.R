@@ -1,6 +1,6 @@
 test_that("Test projection", {
   forc <- c(0, numeric(20) + 3)
-  obs <- solve_ebm(0.3, 1, 0, 10.1, forc)
+  obs <- solve_ebm(0.3, 1, 0, 0, 10.1, forc)
   fit <- ebm_fit(obs, forc, 1,
                  config_file = "../testconfig.yml",
                  config = "test_default")

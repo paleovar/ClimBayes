@@ -15,13 +15,14 @@ RMSE <- function(y_obs, temp) {
 #' @noRd
 create_labs_dict <- function(X_names) {
   d = length(X_names)
-  labs_dict = list("F0" = unname(latex2exp::TeX("$F_0$")),
-                   "Cap" = unname(latex2exp::TeX("$C$")))
+  labs_dict = list("T0" = unname(latex2exp::TeX("$T_0 \\, \\[K\\]$")),
+                   "F0" = unname(latex2exp::TeX("$F_0 \\, \\[W m^{-2}\\]$")),
+                   "Cap" = unname(latex2exp::TeX("$C \\, \\[W yr m^{-2} K^{-1}\\]$")))
   for(j in 1:d) {
     var_name = X_names[j]
     if(startsWith(var_name, "lambda")) {
       ind = sub("lambda", "", var_name)
-      labs_dict[[var_name]] = unname(latex2exp::TeX(paste0("$\\lambda_", ind, "$")))
+      labs_dict[[var_name]] = unname(latex2exp::TeX(paste0("$\\lambda_", ind, " \\, \\[yr^{-1}\\]$")))
     } else if(startsWith(var_name, "weights")) {
       ind = sub("weights", "", var_name)
       labs_dict[[var_name]] = unname(latex2exp::TeX(paste0("$\\w_", ind, "$")))

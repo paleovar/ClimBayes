@@ -4,9 +4,16 @@
 \alias{ebm_fit}
 \title{Main function}
 \usage{
-ebm_fit(obs, forc, n_boxes, start_year = NULL, end_year = NULL,
-  detrending = FALSE, config_file = "ebm_fit_config.yml",
-  config = "experimental")
+ebm_fit(
+  obs,
+  forc,
+  n_boxes,
+  start_year = NULL,
+  end_year = NULL,
+  detrending = FALSE,
+  config_file = system.file("extdata/ebm_fit_config.yml", package = "ClimBayes"),
+  config = "experimental"
+)
 }
 \arguments{
 \item{obs}{Vector of temperature observation values or data frame with columns \code{year} and \code{temperature}.}
@@ -21,14 +28,16 @@ otherwise entire vector is taken).}
 \item{end_year}{Last year of forcing considered (inclusive; only relevant if \code{forc} or \code{obs} is a data frame,
 otherwise entire vector is taken).}
 
-\item{detrending}{Boolean - indicates if observations should be detrended linearly before applying the Bayesian fit.}
+\item{detrending}{Boolean - indicates if observations and forcing
+should be detrended linearly before applying the Bayesian fit.}
 
 \item{config_file}{Path to config file or full config list.}
 
 \item{config}{Name of config to use.}
 }
 \value{
-Object of class \code{ebm_fit_result}, inherits from \code{mcmc_result}. In addition contains an entry
+Object of class \code{ebm_fit_result}, inherits from \code{mcmc_result}.
+In addition contains an entry
 \itemize{
 \item \code{meta}: list with entries
 \itemize{

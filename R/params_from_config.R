@@ -21,11 +21,11 @@ params_from_config <- function(n_boxes, n_years, config_list) {
 
   if(n_boxes > 1) {
     if(config_list$parameters$weights == 'estimate') {
-      X_names = c(X_names, paste0("weights", 2:n_boxes))
+      X_names = c(X_names, paste0("weights", 1:(n_boxes - 1)))
     } else if(config_list$parameters$weights == 'fixed'){
-      for(i in 2:n_boxes) {
+      for(i in 1:(n_boxes - 1)) {
         params[[paste0("weights", i, "_default")]] =
-          config_list$parameter_defaults[[boxes]][["weights"]][i - 1]
+          config_list$parameter_defaults[[boxes]][["weights"]][i]
       }
     } else {
       stop("Please change configuration of weights.")
@@ -36,6 +36,12 @@ params_from_config <- function(n_boxes, n_years, config_list) {
     X_names = c(X_names, "Cap")
   } else {
     params$C_default = config_list$parameter_defaults$Cap
+  }
+
+  if(config_list$parameters$T0 == 'estimate') {
+    X_names = c(X_names, "T0")
+  } else {
+    params$T0_default = config_list$parameter_defaults$T0
   }
 
   if(config_list$parameters$F0 == 'estimate') {
@@ -58,7 +64,7 @@ params_from_config <- function(n_boxes, n_years, config_list) {
 
   # --- Parameters related to prior distributions ---
   if(n_boxes > 1) {
-    for(j in 2:n_boxes) {
+    for(j in 1:(n_boxes - 1)) {
       params[[paste0("weights", j, "_lb")]] <- 0
       params[[paste0("weights", j, "_ub")]] <- 1
     }
@@ -78,8 +84,11 @@ params_from_config <- function(n_boxes, n_years, config_list) {
         shape2 <- c(shape2, config_list$priors$beta_shape2$lambda[[boxes]][i])
       } else if(startsWith(name, "weights")) {
         i <- as.numeric(gsub(".*?([0-9]+)$", "\\1", name))
-        shape1 <- c(shape1, config_list$priors$beta_shape1$weights[[boxes]][i - 1])
-        shape2 <- c(shape2, config_list$priors$beta_shape2$weights[[boxes]][i - 1])
+        shape1 <- c(shape1, config_list$priors$beta_shape1$weights[[boxes]][i])
+        shape2 <- c(shape2, config_list$priors$beta_shape2$weights[[boxes]][i])
+      } else if(name == "T0") {
+        shape1 <- c(shape1, config_list$priors$beta_shape1$T0)
+        shape2 <- c(shape2, config_list$priors$beta_shape2$T0)
       } else if(name == "F0") {
         shape1 <- c(shape1, config_list$priors$beta_shape1$F0)
         shape2 <- c(shape2, config_list$priors$beta_shape2$F0)
@@ -96,6 +105,10 @@ params_from_config <- function(n_boxes, n_years, config_list) {
   if(config_list$parameters$Cap == 'estimate') {
     params$Cap_lb = config_list$priors$Cap_bounds[1]
     params$Cap_ub = config_list$priors$Cap_bounds[2]
+  }
+  if(config_list$parameters$T0 == 'estimate') {
+    params$T0_lb = config_list$priors$T0_bounds[1]
+    params$T0_ub = config_list$priors$T0_bounds[2]
   }
   if(config_list$parameters$F0 == 'estimate') {
     params$F0_lb = config_list$priors$F0_bounds[1]
@@ -114,24 +127,23 @@ params_from_config <- function(n_boxes, n_years, config_list) {
   lambda_mean = numeric(n_boxes)
   for (i in 1:n_boxes) {
     var = paste0("lambda", i)
-    lambda_mean[i] = (params[[paste0(var, "_ub")]] -
-                        params[[paste0(var, "_lb")]]) / 2.0
+    lb = params[[paste0(var, "_lb")]]
+    ub = params[[paste0(var, "_ub")]]
+    lambda_mean[i] = lb + 1/2 * (ub - lb)
   }
 
   if(n_boxes > 1) {
     if(config_list$parameters$weights == 'estimate') {
-      weights_mean = rep(0.5, n_boxes)
+      weights_mean = rep(1 / n_boxes, n_boxes)
     } else if(config_list$parameters$weights == 'fixed'){
       weights_mean = config_list$parameter_defaults[[boxes]][["weights"]]
-      weights_mean = c(1 - sum(weights_mean), weights_mean)
-
+      weights_mean = c(weights_mean, 1 - sum(weights_mean))
     } else {
       stop("Please change configuration of weights.")
     }
   } else {
     weights_mean = 1
   }
-
 
   # --- parameters related to noise in likelihood ---
 
@@ -143,8 +155,8 @@ params_from_config <- function(n_boxes, n_years, config_list) {
     params$meas_noise = config_list$noise$white_iterative$SD
   } else if(config_list$noise$type == 'ar1_iterative') {
     params$noise_process = "iterative_correlated"
-    params$meas_noise = config_list$noise$ar1_iterative$SD_white
     sd_ar1_default = config_list$noise$ar1_iterative$SD_ar1_default
+    params$meas_noise = config_list$noise$ar1_iterative$SD_white
     params$noise_factor = sx_from_sd(sd_ar1_default,
                                              lambda_mean, weights_mean)
   } else if(config_list$noise$type == 'ar1_fixed') {
@@ -153,8 +165,8 @@ params_from_config <- function(n_boxes, n_years, config_list) {
 
     lambda = config_list$noise$ar1_fixed$lambda[[boxes]]
     if(n_boxes > 1) {
-      weights = c(1 - sum(config_list$noise$ar1_fixed[[boxes]]$weights[[boxes]]),
-                  config_list$noise$ar1_fixed$weights[[boxes]])
+      weights = c(config_list$noise$ar1_fixed$weights[[boxes]],
+                  1 - sum(config_list$noise$ar1_fixed[[boxes]]$weights[[boxes]]))
     } else {
       weights = 1
     }
@@ -185,6 +197,9 @@ params_from_config <- function(n_boxes, n_years, config_list) {
     if(config_list$parameters$Cap == 'estimate') {
       s = c(s, scaling * (params$Cap_ub - params$Cap_lb) * 0.5)
     }
+    if(config_list$parameters$T0 == 'estimate') {
+      s = c(s, scaling * (params$T0_ub - params$T0_lb) * 0.5)
+    }
     if(config_list$parameters$F0 == 'estimate') {
       s = c(s, scaling * (params$F0_ub - params$F0_lb) * 0.5)
     }
@@ -203,6 +218,9 @@ params_from_config <- function(n_boxes, n_years, config_list) {
     if(config_list$parameters$Cap == 'estimate') {
       s = c(s, prop_defaults$Cap)
     }
+    if(config_list$parameters$T0 == 'estimate') {
+      s = c(s, prop_defaults$T0)
+    }
     if(config_list$parameters$F0 == 'estimate') {
       s = c(s, prop_defaults$F0)
     }
@@ -213,6 +231,7 @@ params_from_config <- function(n_boxes, n_years, config_list) {
   }
   params$alpha <- config_list$metropolis_hastings$alpha
   params$n_chains <- config_list$metropolis_hastings$n_chains
+  params$chain_start_buffer <- config_list$metropolis_hastings$chain_start_buffer
   params$dynamic_termination <- config_list$metropolis_hastings$dynamic_termination
   params$dynamic_stepsize <- config_list$metropolis_hastings$n_samples_dynamic
   error_tol = config_list$metropolis_hastings$error_tolerance
@@ -229,11 +248,15 @@ params_from_config <- function(n_boxes, n_years, config_list) {
   if(config_list$parameters$Cap == 'estimate') {
     epsilon = c(epsilon, error_tol * (params$Cap_ub - params$Cap_lb) * 0.5)
   }
+  if(config_list$parameters$T0 == 'estimate') {
+    epsilon = c(epsilon, error_tol * (params$T0_ub - params$T0_lb) * 0.5)
+  }
   if(config_list$parameters$F0 == 'estimate') {
     epsilon = c(epsilon, error_tol * (params$F0_ub - params$F0_lb) * 0.5)
   }
   params$epsilon = epsilon
   params$gelman_threshold = config_list$metropolis_hastings$gelman_diagnostic
+
 
   # --- extra ----
   params$return_solution_matrix = config_list$extra$return_solution_matrix

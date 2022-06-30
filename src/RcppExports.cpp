@@ -10,17 +10,6 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// timesTwo
-int timesTwo(int x);
-RcppExport SEXP _ClimBayes_timesTwo(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(timesTwo(x));
-    return rcpp_result_gen;
-END_RCPP
-}
 // setup_sigma
 NumericMatrix setup_sigma(int N, NumericVector lambda, NumericVector weights, double deltat, double noise_factor, double o);
 RcppExport SEXP _ClimBayes_setup_sigma(SEXP NSEXP, SEXP lambdaSEXP, SEXP weightsSEXP, SEXP deltatSEXP, SEXP noise_factorSEXP, SEXP oSEXP) {
@@ -66,7 +55,6 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_ClimBayes_timesTwo", (DL_FUNC) &_ClimBayes_timesTwo, 1},
     {"_ClimBayes_setup_sigma", (DL_FUNC) &_ClimBayes_setup_sigma, 6},
     {"_ClimBayes_ode_helper", (DL_FUNC) &_ClimBayes_ode_helper, 5},
     {"_ClimBayes_my_mm", (DL_FUNC) &_ClimBayes_my_mm, 2},

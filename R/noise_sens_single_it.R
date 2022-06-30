@@ -9,6 +9,7 @@
 #' * `lambda`
 #' * `weights`
 #' * `Cap`
+#' * `T0`
 #' * `F0`
 #' @param sd_white SD of white noise
 #' @param sd_ar1 SD of AR(1) noise
@@ -19,12 +20,12 @@
 #' @return Object of class `ebm_fit` - the result of the fit to the synthetic observations.
 #' @export
 #' @examples
-#' vars = list(lambda = 0.1, Cap = 10.1, weights = 1, F0 = 0)
+#' vars = list(lambda = 0.1, Cap = 10.1, weights = 1, T0 = 0, F0 = 0)
 #' noise_sens_single_it(c(0, numeric(99) + 10), vars, 0.1, 0, 1, 100)
 noise_sens_single_it <- function(forc, vars,
                                  sd_white, sd_ar1,
                                  start_year = NULL, end_year = NULL,
-                                 config_file = "ebm_fit_config_noise_sens.yml",
+                                 config_file = system.file('extdata/ebm_fit_config.yml', package = 'ClimBayes'),
                                  config = "noise_sens") {
 
   # convert forcing input into correct vector
@@ -38,6 +39,7 @@ noise_sens_single_it <- function(forc, vars,
   lambda_vec = vars$lambda
   weights_vec = vars$weights
   Cap = vars$Cap
+  T0 = vars$T0
   F0 = vars$F0
 
   # extract the params from config file
@@ -52,7 +54,7 @@ noise_sens_single_it <- function(forc, vars,
   boxes <- paste0(english::as.english(n_boxes), "_box")
   config_file[[config]]$noise$ar1_fixed$lambda[[boxes]] = lambda_vec
   if(length(lambda_vec) > 1) {
-    config_file[[config]]$noise$ar1_fixed$weights[[boxes]] = weights_vec[2:length(weights_vec)]
+    config_file[[config]]$noise$ar1_fixed$weights[[boxes]] = weights_vec[1:(length(weights_vec) - 1)]
   }
   config_file[[config]]$noise$ar1_fixed$SD_ar1 = sd_ar1
   config_file[[config]]$noise$ar1_fixed$SD_white = sd_white
@@ -60,7 +62,7 @@ noise_sens_single_it <- function(forc, vars,
 
   # generate synthetic data
   # generated with forcing values and fixed parameters
-  sol <- solve_ebm(lambda_vec, weights_vec, F0, Cap,
+  sol <- solve_ebm(lambda_vec, weights_vec, T0, F0, Cap,
                                   forc_vec - forc_vec[1])
   noise <- as.numeric(gen_noise(1, lambda_vec, weights_vec, length(forc_vec),
                                 sd_white, sd_ar1))

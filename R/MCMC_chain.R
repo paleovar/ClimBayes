@@ -3,7 +3,6 @@
 #' Called by `MCMC_run`.
 #'
 #' @param X_start Initial values for parameters
-#' @param X_names variable names of corresponding parameters
 #' @param params List of parameters;
 #' relevant entries (for more details, see vignette for config file):
 #' * `alpha`: weighting factor for adaptive covariance scheme
@@ -51,7 +50,6 @@ MCMC_chain <- function(X_start, params) {
     p_prop <- neg_log_post(X_prop, params, sol = sol_prop)
 
     acc_prob <- exp(min(0, - p_prop + p_X))
-
     tryCatch(
       {
         x <- u <= acc_prob
@@ -62,7 +60,7 @@ MCMC_chain <- function(X_start, params) {
         message("Failed in MCMC sampling")
         message(p_prop)
         message(p_X)
-        message(cond)
+        # message(cond)
         stop("Stopping now")
       }
     )

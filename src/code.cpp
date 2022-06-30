@@ -1,23 +1,15 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-// Below is a simple example of exporting a C++ function to R. You can
-// source this function into an R session using the Rcpp::sourceCpp
-// function (or via the Source button on the editor toolbar)
 
-// For more on using Rcpp click the Help button on the editor toolbar
-
-//' @export
-// [[Rcpp::export]]
-int timesTwo(int x) {
-  return x * 2;
-}
-
-//' test
-//'
-//' test
-//'
-//' @param N ...
+//' Helper function to set up covariance matrix
+//' @param N number of years
+//' @param lambda vector of lambda values (one for each box)
+//' @param weights vector of weights values (one for each box)
+//' @param deltat time step in years (usually 1)
+//' @param noise_factor constant scaling factor for AR(1) noise,
+//' related to (see sx_from_sd and sd_from_sx)
+//' @param o SD of white noise
 //' @export
 // [[Rcpp::export]]
 NumericMatrix setup_sigma(int N, NumericVector lambda,
@@ -42,7 +34,8 @@ NumericMatrix setup_sigma(int N, NumericVector lambda,
   return sigma_e;
 }
 
-//' helper function to solve the ODE
+
+//' Helper function to solve the ODE
 //' @param n_years number of years considered
 //' @param lambda vector for lambda, each entry corresponding to one box
 //' @param weights vector of weights values, one for each box; should sum up to 1
@@ -70,9 +63,10 @@ NumericVector ode_helper(int n_years, NumericVector lambda,
 }
 
 
-// Simple C++ code for matrix multiplication
-//'
-//' @param m ...
+//' Simple C++ code for matrix-vector multiplication
+//' @param m matrix
+//' @param v vector
+//' @return matrix product (but in a fast way)
 //' @export
 // [[Rcpp::export]]
 NumericVector my_mm(NumericMatrix m, NumericVector v){

@@ -3,8 +3,8 @@
 #' (Doing Bayesian Data Analysis)
 #'
 #' For each column in the chain, compute
-#' \deqn{\text{MCSE} = \frac{\sigma_x}{\sqrt{\text{ESS}}}},
-#' where \eqn{\sigma_x} is the standard deviation of the respective column
+#' MCSE = `tau_x / sqrt(ESS)`,
+#' where `tau_x` is the standard deviation of the respective column
 #' @param chain Matrix of MCMC chain, each row a sample, each column a parameter
 #' @param ESS Vector effective sample sizes for each column;
 #' if NULL, will be computed using package coda
@@ -56,7 +56,6 @@ extract_samples <- function(chain_list, first_sample) {
 #' Helper function to extract solution matrix from chain list,
 #' separates burn_in samples from rest,
 #' and concatenates the chain list to one long chain
-
 extract_sol_matrix <- function(chain_list, first_sample) {
   # extracted solution matrix from chain_list
   # in long_chain_sol, each ROW is a sample EBM-solution, each COL a point in time

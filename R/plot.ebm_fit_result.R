@@ -5,6 +5,10 @@
 #' @param line_size Line size in plot.
 #' @param return_all Boolean to choose if the plots of the marginal posteriors of
 #' single parameters should be returned separately in a list.
+#' @param adjust_density smoothing parameter, passed on to parameter `adjust` in `geom_line`,
+#' used in combination with `stat="density"`
+#' @param labs_dict dictionary of axis labels; if NULL, created automatically;
+#' format: e.g. `labs_dict[["lambda1"]]` contains label for `lambda1`.
 #' @return Grid of marginal posteriors (result from `cowplot::plot_grid`) if
 #' `return_all = FALSE`. Otherwise a list with entries
 #' - `gg`: Grid of marginal posteriors
@@ -14,6 +18,9 @@ plot_marginals <- function(res_list,
                           text_size = 10,
                           line_size = 0.5,
                           return_all = FALSE,
+                          adjust_density = 3,
+                          cols = c("Prior" = "dodgerblue3", "Posterior" = "firebrick"),
+                          labs_dict = NULL,
                           ...) {
 
   samples <- res_list$samples$parameters
@@ -21,7 +28,9 @@ plot_marginals <- function(res_list,
   n_chains <- res_list$input_params$n_chains
   X_names <- res_list$input_params$X_names
   d = length(X_names)
-  labs_dict <- create_labs_dict(X_names)
+  if(is.null(labs_dict)){
+    labs_dict <- create_labs_dict(X_names)
+  }
 
   plot_list <- list()
   for (j in 1:d) {
@@ -35,11 +44,16 @@ plot_marginals <- function(res_list,
     ub <- as.numeric(res_list$input_params[[paste0(variable_name, '_ub')]])
 
     prior_type <- as.character(res_list$input_params[["prior_type"]])
-    xseq <- seq(lb, ub, 1e-5)
+    if(j == 1) {
+      xseq <- seq(lb, ub, 1e-5)
+    } else {
+      xseq <- seq(lb, ub, 1e-4)
+    }
+
 
     if(prior_type == "beta") {
-      prior_beta_shape1 <- as.numeric(res_list$input_params[["prior_beta_shape1"]])
-      prior_beta_shape2 <- as.numeric(res_list$input_params[["prior_beta_shape2"]])
+      prior_beta_shape1 <- as.numeric(res_list$input_params[["prior_beta_shape1"]][j])
+      prior_beta_shape2 <- as.numeric(res_list$input_params[["prior_beta_shape2"]][j])
       prior_vals <- sapply(xseq, function(x)
         dbeta((x - lb)  / (ub - lb) ,prior_beta_shape1, prior_beta_shape2) /
           (ub-lb) * (lb <= x) * (ub >= x))
@@ -49,12 +63,11 @@ plot_marginals <- function(res_list,
 
     prior_df <- tibble::tibble(x = xseq, prior_density = prior_vals)
 
-    cols = c("Prior" = "dodgerblue3", "Posterior" = "firebrick")
     plot_list[[j]] <- ggplot2::ggplot(samples_df, ggplot2::aes(x = samples)) +
       ggplot2::labs(x = labs_dict[[variable_name]],
            y = "Density") +
      ggplot2::geom_line(ggplot2::aes(col = "Posterior"), stat="density",
-                            size = line_size, adjust = 3) +
+                            size = line_size, adjust = adjust_density) +
       ggplot2::geom_line(data = prior_df,
                          ggplot2::aes(x = x, y = prior_density, col = "Prior"),
                          size = line_size) +
@@ -102,6 +115,7 @@ plot_marginals <- function(res_list,
 #' @param text_size Text size in plot.
 #' @param line_size Line size in plot.
 #' @param plot_forcing Boolean to decide if forcing should be plotted below.
+#' @param subtract_mean Boolean to specify if overall mean of all time series should be subtracted before plotting
 #' @return A ggplot if `plot_forcing = FALSE` and the output of `cowplot::plot_grid`
 #' if `plot_forcing = TRUE`.
 #' @export
@@ -111,6 +125,7 @@ plot_fit <- function(res_list,
                      text_size = 10,
                      line_size = 0.5,
                      plot_forcing = FALSE,
+                     subtract_mean = FALSE,
                      ...
                     ) {
   temp_vals = res_list$input_params$y_obs
@@ -145,12 +160,21 @@ plot_fit <- function(res_list,
     results_mean
   results <- dplyr::bind_rows(obs_data, results_mean)
 
+  if(subtract_mean) {
+    mt = mean(results$temp)
+    results %>%
+      dplyr::mutate(temp = temp - mt,
+                    temp_lower = temp_lower - mt,
+                    temp_upper = temp_upper - mt) ->
+      results
+  }
+
   results$type <- factor(results$type, levels = c("Observations", "Model est."))
   if(is.null(ebm_sol)) {
     cols <- c("Observations" = "darkgrey", "Model est." = "firebrick")
     ltys <- c("Model est." = "solid", "Observations" = "solid")
-    gg <- ggplot2::ggplot(results, ggplot2::aes(x = time_years, y = temp, color = type)) +
-      ggplot2::geom_line(size = line_size) +
+    gg <- ggplot2::ggplot(results, ggplot2::aes(x = time_years)) +
+      ggplot2::geom_line(ggplot2::aes(y = temp, color = type), size = line_size) +
       ggplot2::labs(x = "Year",
            y = "Temperature anomaly [K]") +
       ggplot2::theme_bw() +

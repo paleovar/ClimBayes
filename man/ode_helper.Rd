@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{ode_helper}
 \alias{ode_helper}
-\title{helper function to solve the ODE}
+\title{Helper function to solve the ODE}
 \usage{
 ode_helper(n_years, lambda, weights, forc_vals, F0)
 }
@@ -22,5 +22,5 @@ vector of solution values,
 not scaled be heat capacity yet
 }
 \description{
-helper function to solve the ODE
+Helper function to solve the ODE
 }

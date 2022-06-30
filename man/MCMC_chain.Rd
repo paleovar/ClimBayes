@@ -16,8 +16,6 @@ relevant entries (for more details, see vignette for config file):
 \item \code{s}: proposal variance
 \item \code{M}: number of samples
 }}
-
-\item{X_names}{variable names of corresponding parameters}
 }
 \value{
 List with entries:

@@ -20,24 +20,26 @@ Imports:
     foreach,
     ggExtra,
     ggplot2,
+    latex2exp,
     magrittr,
     mvtnorm,
-    ncdf4,
     parallel,
+    purrr,
     Rcpp,
-    Rfast,
     rlang,
     scales,
     tibble,
     tidyr,
+    yaml,
     zoo
 RoxygenNote: 7.1.2
 LinkingTo: 
     Rcpp
 Depends: 
     doRNG (>= 1.8.2),
-    R (>= 2.10)
+    R (>= 3.5.0)
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
+VignetteBuilder: knitr

@@ -6,6 +6,7 @@
 #' * `parallel`: Boolean, should the computation run in parallel_
 #' * `X_names`
 #' * `n_chains`: Number of chains
+#' @return list of chains, each element as returned from `MCMC_chain`
 #' @export
 MCMC_parallel_chains <- function(params) {
 
@@ -29,6 +30,10 @@ MCMC_parallel_chains <- function(params) {
         var_name = X_names[i]
         lb = params[[paste0(var_name, "_lb")]]
         ub = params[[paste0(var_name, "_ub")]]
+        if(!is.null(params$chain_start_buffer)) {
+          lb = lb + params$chain_start_buffer * (ub - lb)
+          ub = ub - params$chain_start_buffer * (ub - lb)
+        }
         X_start[i] = lb + start * (ub - lb)
       }
       chain_list[[j]] <- MCMC_chain(X_start, params)
@@ -50,6 +55,10 @@ MCMC_parallel_chains <- function(params) {
         var_name = X_names[i]
         lb = params[[paste0(var_name, "_lb")]]
         ub = params[[paste0(var_name, "_ub")]]
+        if(!is.null(params$chain_start_buffer)) {
+          lb = lb + params$chain_start_buffer * (ub - lb)
+          ub = ub - params$chain_start_buffer * (ub - lb)
+        }
         X_start[i] = lb + start * (ub - lb)
       }
       MCMC_chain(X_start, params)

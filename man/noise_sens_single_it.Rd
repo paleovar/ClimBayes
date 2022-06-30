@@ -4,9 +4,16 @@
 \alias{noise_sens_single_it}
 \title{Single iteration to check influence of noise sensitivity}
 \usage{
-noise_sens_single_it(forc, vars, sd_white, sd_ar1, start_year = NULL,
-  end_year = NULL, config_file = "ebm_fit_config_noise_sens.yml",
-  config = "noise_sens")
+noise_sens_single_it(
+  forc,
+  vars,
+  sd_white,
+  sd_ar1,
+  start_year = NULL,
+  end_year = NULL,
+  config_file = system.file("extdata/ebm_fit_config.yml", package = "ClimBayes"),
+  config = "noise_sens"
+)
 }
 \arguments{
 \item{forc}{Vector of forcing values or data frame with columns \code{year} and \code{forcing}.}
@@ -16,6 +23,7 @@ noise_sens_single_it(forc, vars, sd_white, sd_ar1, start_year = NULL,
 \item \code{lambda}
 \item \code{weights}
 \item \code{Cap}
+\item \code{T0}
 \item \code{F0}
 }}
 
@@ -40,6 +48,6 @@ plus noise with SDs \code{sd_white} and \code{sd_ar1}. Then fits the EBM to thes
 and returns the result.
 }
 \examples{
-vars = list(lambda = 0.1, Cap = 10.1, weights = 1, F0 = 0)
+vars = list(lambda = 0.1, Cap = 10.1, weights = 1, T0 = 0, F0 = 0)
 noise_sens_single_it(c(0, numeric(99) + 10), vars, 0.1, 0, 1, 100)
 }

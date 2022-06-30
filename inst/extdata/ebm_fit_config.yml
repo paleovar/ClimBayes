@@ -1,11 +1,18 @@
-# This is the configuration file for the ... package
+# This is the configuration file for the ClimBayes package
 # In general, this configuration does not need any editing to use the package
 #
 # Note: Please enter all numbers as floats, e.g. for 1 enter 1.0
-# Further, yaml DOES NOT support scientific notation,
+# Further, yaml DOES NOT support scienctific notation,
 # e.g. for "1e3" enter "1000.0" instead
-# default configuration by Maybritt Schillinger
-default:
+
+# ------------------------------------------------------------------------------
+# ------------------ EXPERIMENTAL ----------------------------------------------
+# ------------------------------------------------------------------------------
+
+# experimental configuration by Maybritt Schillinger
+# suited for simple tests
+# agrees with default except for number of samples and chains
+experimental:
   # specification of additional EBM parameters
   # can either be 'estimate' or 'fixed'
   # if 'estimate', then the value is estimated via the Bayesian approach
@@ -13,6 +20,8 @@ default:
   parameters:
     # heat capacity
     Cap: fixed
+    # initial temperature parameter
+    T0: estimate
     # initial forcing parameter
     F0: estimate
     # weights between feedback parameters
@@ -21,6 +30,7 @@ default:
   # default values for parameters
   # necessary if parameters above are set to 'fixed'
   parameter_defaults:
+    T0: 0
     F0: 0
     Cap: 10.1
     two_box:
@@ -70,7 +80,7 @@ default:
   # specification of prior distributions
   priors:
     # type, one of 'uniform' or 'beta'
-    type: uniform
+    type: beta
     # if type = 'beta', specify shape here
     beta_shape1:
       lambda:
@@ -79,11 +89,19 @@ default:
         two_box:
         - 2
         - 2
+        three_box:
+        - 2
+        - 2
+        - 2
       weights:
         two_box:
         - 2
-        F0: 2
-        Cap: 2
+        three_box:
+        - 2
+        - 2
+      T0: 2
+      F0: 2
+      Cap: 2
     beta_shape2:
       lambda:
         one_box:
@@ -91,46 +109,245 @@ default:
         two_box:
         - 2
         - 2
+        three_box:
+        - 2
+        - 2
+        - 2
       weights:
         two_box:
         - 2
-        F0: 2
-        Cap: 2
+        three_box:
+        - 2
+        - 2
+      T0: 2
+      F0: 2
+      Cap: 2
     # bounds for prior intervals
     one_box:
       lambda1_bounds:
-        - 0.001
-        - 1.0
+        - 0.005
+        - 2.0
     two_box:
       lambda1_bounds:
-        - 0.001
-        - 0.1
+        - 0.2
+        - 2.0
       lambda2_bounds:
-        - 0.1
-        - 5.0
+        - 0.005
+        - 0.2
     three_box:
       lambda1_bounds:
-        - 0.001
-        - 0.01
+        - 0.2
+        - 2.0
       lambda2_bounds:
-        - 0.01
-        - 0.1
+        - 0.02
+        - 0.2
       lambda3_bounds:
-        - 0.1
-        - 5.0
-    four_box:
+        - 0.005
+        - 0.02
+    T0_bounds:
+      - -1.0
+      - 1.0
+    F0_bounds:
+      - -2.0
+      - 2.0
+    # prior bounds for heat capacity
+    # only required if the above default value is changed to 'estimate'
+    Cap_bounds:
+      - 5.0
+      - 15.0
+
+  # specification for metropolis-hastings algorithm
+  metropolis_hastings:
+    # number of samples
+    n_samples: 8000.0
+    # proposal variance
+    # If 'auto', then determined automatically from prior intervals
+    # If 'default', then values for lambda are chosen from defaults below
+    proposal_variance: default
+
+    proposal_variance_defaults:
+      lambda:
+        one_box:
+          - 0.00001
+        two_box:
+          - 0.0001
+          - 0.00001
+        three_box:
+          - 0.0001
+          - 0.00001
+          - 0.000001
+      weights: 0.0001
+      T0: 0.000001
+      F0: 0.0001
+      Cap: 0.1
+    # weighting factor in adaptive covariance scheme, between 0 and 1
+    alpha: 0.95
+    # specifiy burn-in period
+    # the number of samples discarded in each chain is
+    # n_samples / burn_in_proportion
+    burn_in_proportion: 2.0
+    # number of chains
+    n_chains: 2.0
+    # buffer for start points of chains, in proportion of prior interval
+    chain_start_buffer: 0.0
+    # should sampling continue until performance criteria are met?
+    dynamic_termination: FALSE
+    # number of additional samples to compute until convergence is evaluated
+    # again
+    n_samples_dynamic: 1000.0
+    # error tolerance in dynamic termination, between 0 and 1
+    error_tolerance: 0.05
+    # threshold for Gelman-Rubin diagnostic
+    gelman_diagnostic: 1.05
+
+  # additional technical parameters
+  extra:
+    parallel: FALSE
+    parallel_free_cores: 2
+    return_solution_matrix: TRUE
+
+# ------------------------------------------------------------------------------
+# ------------------ DEFAULT ----------------------------------------------
+# ------------------------------------------------------------------------------
+
+
+# default configuration by Maybritt Schillinger
+# agrees with experimental up to number of samples and chains
+default:
+  # specification of additional EBM parameters
+  # can either be 'estimate' or 'fixed'
+  # if 'estimate', then the value is estimated via the Bayesian approach
+  # if 'fixed', then the default values are taken from parameter_defaults
+  parameters:
+    # heat capacity
+    Cap: fixed
+    # initial temperature parameter
+    T0: estimate
+    # initial forcing parameter
+    F0: estimate
+    # weights between feedback parameters
+    weights: estimate
+
+  # default values for parameters
+  # necessary if parameters above are set to 'fixed'
+  parameter_defaults:
+    T0: 0
+    F0: 0
+    Cap: 10.1
+    two_box:
+      weights:
+        - 0.7
+    three_box:
+      weights:
+        - 0.3
+        - 0.6
+
+  # parameters to specify the noise in the likelihood distribution
+  noise:
+    # type of noise
+    # can be 'ar1_iterative', 'ar1_fixed', 'white_fixed' or 'white_iterative'
+    type: ar1_iterative
+
+    # if type = 'white_fixed', specify standard deviation of white noise
+    white_fixed:
+      SD: 0.1
+
+    # if type = 'white_iterative', specify initial value for standard deviation
+    # of white noise
+    white_iterative:
+      SD: 0.1
+
+    # if type = 'ar1_iterative', specify standard deviation of white noise (fixed),
+    # and initial value of standard deviation of ar1 noise
+    ar1_iterative:
+      SD_white: 0.01
+      SD_ar1_default: 0.1
+
+    # if type = 'ar1_fixed', specify standard deviation of white noise,
+    # standard deviation of ar1 noise and correlation parameters
+    ar1_fixed:
+      SD_white: 0.01
+      SD_ar1: 0.1
+      lambda:
+        one_box:
+        - 0.3
+        two_box:
+        - 0.05
+        - 1.0
+      weights:
+        two_box:
+        - 0.8
+
+  # specification of prior distributions
+  priors:
+    # type, one of 'uniform' or 'beta'
+    type: beta
+    # if type = 'beta', specify shape here
+    beta_shape1:
+      lambda:
+        one_box:
+        - 2
+        two_box:
+        - 2
+        - 2
+        three_box:
+        - 2
+        - 2
+        - 2
+      weights:
+        two_box:
+        - 2
+        three_box:
+        - 2
+        - 2
+      T0: 2
+      F0: 2
+      Cap: 2
+    beta_shape2:
+      lambda:
+        one_box:
+        - 2
+        two_box:
+        - 2
+        - 2
+        three_box:
+        - 2
+        - 2
+        - 2
+      weights:
+        two_box:
+        - 2
+        three_box:
+        - 2
+        - 2
+      T0: 2
+      F0: 2
+      Cap: 2
+    # bounds for prior intervals
+    one_box:
       lambda1_bounds:
-        - 0.001
-        - 0.01
+        - 0.005
+        - 2.0
+    two_box:
+      lambda1_bounds:
+        - 0.2
+        - 2.0
       lambda2_bounds:
-        - 0.01
-        - 0.1
+        - 0.005
+        - 0.2
+    three_box:
+      lambda1_bounds:
+        - 0.2
+        - 2.0
+      lambda2_bounds:
+        - 0.02
+        - 0.2
       lambda3_bounds:
-        - 0.1
-        - 1.0
-      lambda4_bounds:
-        - 1.0
-        - 5.0
+        - 0.005
+        - 0.02
+    T0_bounds:
+      - -1.0
+      - 1.0
     F0_bounds:
       - -2.0
       - 2.0
@@ -152,12 +369,17 @@ default:
     proposal_variance_defaults:
       lambda:
         one_box:
-          - 0.0001
-        two_box:
           - 0.00001
+        two_box:
           - 0.0001
-      weights: 0.001
-      F0: 0.01
+          - 0.00001
+        three_box:
+          - 0.0001
+          - 0.00001
+          - 0.000001
+      weights: 0.0001
+      T0: 0.000001
+      F0: 0.0001
       Cap: 0.1
     # weighting factor in adaptive covariance scheme, between 0 and 1
     alpha: 0.95
@@ -166,9 +388,11 @@ default:
     # n_samples / burn_in_proportion
     burn_in_proportion: 2.0
     # number of chains
-    n_chains: 5.0
+    n_chains: 4.0
+    # buffer for start points of chains, in proportion of prior interval
+    chain_start_buffer: 0.0
     # should sampling continue until performance criteria are met?
-    dynamic_termination: TRUE
+    dynamic_termination: FALSE
     # number of additional samples to compute until convergence is evaluated
     # again
     n_samples_dynamic: 1000.0
@@ -183,30 +407,30 @@ default:
     parallel_free_cores: 2
     return_solution_matrix: TRUE
 
-
 # ------------------------------------------------------------------------------
-# ------------------ EXPERIMENTAL ----------------------------------------------
+# ------------------ NOISE_SENS   ----------------------------------------------
 # ------------------------------------------------------------------------------
 
-
-
-# experimental configuration by Maybritt Schillinger
-experimental:
-  # specification of additional EBM parameters
+# configuration for noise_sensitivity experiments
+noise_sens:
+  # specificiation of additional EBM parameters
   # can either be 'estimate' or 'fixed'
   # if 'estimate', then the value is estimated via the Bayesian approach
   # if 'fixed', then the default values are taken from parameter_defaults
   parameters:
     # heat capacity
     Cap: fixed
+    # initial temperature parameter
+    T0: estimate
     # initial forcing parameter
-    F0: estimate
+    F0: fixed
     # weights between feedback parameters
     weights: estimate
 
   # default values for parameters
   # necessary if parameters above are set to 'fixed'
   parameter_defaults:
+    T0: 0
     F0: 0
     Cap: 10.1
     two_box:
@@ -220,23 +444,8 @@ experimental:
   # parameters to specify the noise in the likelihood distribution
   noise:
     # type of noise
-    # can be 'ar1_iterative', 'ar1_fixed', 'white_fixed' or 'white_iterative'
-    type: ar1_iterative
-
-    # if type = 'white_fixed', specify standard deviation of white noise
-    white_fixed:
-      SD: 0.1
-
-    # if type = 'white_iterative', specify initial value for standard deviation
-    # of white noise
-    white_iterative:
-      SD: 0.1
-
-    # if type = 'ar1_iterative', specify standard deviation of white noise (fixed),
-    # and initial value of standard deviation of ar1 noise
-    ar1_iterative:
-      SD_white: 0.01
-      SD_ar1_default: 0.1
+    # can be 'ar1_iterative', 'ar1_fixed', 'white' or 'white_iterative'
+    type: ar1_fixed
 
     # if type = 'ar1_fixed', specify standard deviation of white noise,
     # standard deviation of ar1 noise and correlation parameters
@@ -247,8 +456,8 @@ experimental:
         one_box:
         - 0.3
         two_box:
-        - 0.05
-        - 1.0
+        - 0.07
+        - 1.5
       weights:
         two_box:
         - 0.8
@@ -258,65 +467,33 @@ experimental:
     # type, one of 'uniform' or 'beta'
     type: uniform
     # if type = 'beta', specify shape here
-    beta_shape1:
-      lambda:
-        one_box:
-        - 2
-        two_box:
-        - 2
-        - 2
-      weights:
-        two_box:
-        - 2
-        F0: 2
-        Cap: 2
-    beta_shape2:
-      lambda:
-        one_box:
-        - 2
-        two_box:
-        - 2
-        - 2
-      weights:
-        two_box:
-        - 2
-        F0: 2
-        Cap: 2
-    # bounds for prior intervals
+    beta_shape1: NA
+    beta_shape2 : NA
+       # bounds for prior intervals
     one_box:
       lambda1_bounds:
-        - 0.001
-        - 1.0
+        - 0.005
+        - 2.0
     two_box:
       lambda1_bounds:
-        - 0.001
-        - 0.1
+        - 0.2
+        - 2.0
       lambda2_bounds:
-        - 0.1
-        - 5.0
+        - 0.005
+        - 0.2
     three_box:
       lambda1_bounds:
-        - 0.001
-        - 0.01
+        - 0.2
+        - 2.0
       lambda2_bounds:
-        - 0.01
-        - 0.1
+        - 0.02
+        - 0.2
       lambda3_bounds:
-        - 0.1
-        - 5.0
-    four_box:
-      lambda1_bounds:
-        - 0.001
-        - 0.01
-      lambda2_bounds:
-        - 0.01
-        - 0.1
-      lambda3_bounds:
-        - 0.1
-        - 1.0
-      lambda4_bounds:
-        - 1.0
-        - 5.0
+        - 0.005
+        - 0.02
+    T0_bounds:
+      - -1.0
+      - 1.0
     F0_bounds:
       - -2.0
       - 2.0
@@ -338,13 +515,19 @@ experimental:
     proposal_variance_defaults:
       lambda:
         one_box:
-          - 0.0001
-        two_box:
           - 0.00001
+        two_box:
           - 0.0001
-      weights: 0.001
-      F0: 0.01
+          - 0.00001
+        three_box:
+          - 0.0001
+          - 0.00001
+          - 0.000001
+      weights: 0.0001
+      T0: 0.000001
+      F0: 0.0001
       Cap: 0.1
+    # auto
     # weighting factor in adaptive covariance scheme, between 0 and 1
     alpha: 0.95
     # specifiy burn-in period
@@ -352,7 +535,9 @@ experimental:
     # n_samples / burn_in_proportion
     burn_in_proportion: 2.0
     # number of chains
-    n_chains: 5.0
+    n_chains: 2.0
+    # buffer for start points of chains, in percentage of prior interval
+    chain_start_buffer: 0.0
     # should sampling continue until performance criteria are met?
     dynamic_termination: FALSE
     # number of additional samples to compute until convergence is evaluated

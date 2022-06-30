@@ -3,15 +3,16 @@
 
 #' Get SD of the AR(1) noise from the `noise_factor`.
 #'
-#' The `noise_factor` is also $\sigma_x in the literature, hence the name.
-#' It is the scaling factor
-#' in front of the OU-processes, i.e. for $\sigma$ from the paper, we have
-#' $\sigma_x = \sigma / C$ with heat capacity $C$.
+#' The `noise_factor` is also sometimes called `sigma_x` in the literature,
+#' hence the name `sx`.
+#' It is the scaling factor in front of the OU-processes,
+#' i.e. for `sigma_W` from the paper, we have
+#' `sigma_x = sigma / C` with heat capacity C.
 #'
-#' @param sx The parameter `noise_factor`.
+#' @param sx The parameter `noise_factor` as stored in the parameters list.
 #' @param lambda Vector of lambda values.
 #' @param weights Vector of weights values.
-#' @return Value of $sigma_x$.
+#' @return Value of `sigma_x`.
 #' @noRd
 sd_from_sx <- function(sx, lambda, weights) {
   var_terms <- outer(weights, weights) *
@@ -22,10 +23,11 @@ sd_from_sx <- function(sx, lambda, weights) {
 
 #' Get the `noise_factor` from the SD of the AR(1) noise.
 #'
-#' The `noise_factor` is also $\sigma_x in the literature, hence the name.
-#' It is the scaling factor
-#' in front of the OU-processes, i.e. for $\sigma$ from the paper, we have
-#' $\sigma_x = \sigma / C$ with heat capacity $C$.
+#' The `noise_factor` is also sometimes called `sigma_x` in the literature,
+#' hence the name `sx`.
+#' It is the scaling factor in front of the OU-processes,
+#' i.e. for `sigma_W` from the paper, we have
+#' `sigma_x = sigma / C` with heat capacity C.
 #'
 #' @param sd The SD of the AR(1) noise.
 #' @param lambda Vector of lambda values.

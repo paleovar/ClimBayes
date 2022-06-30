@@ -8,10 +8,12 @@
 #' otherwise entire vector is taken).
 #' @param end_year Last year of forcing considered (inclusive; only relevant if `forc` or `obs` is a data frame,
 #' otherwise entire vector is taken).
-#' @param detrending Boolean - indicates if observations should be detrended linearly before applying the Bayesian fit.
+#' @param detrending Boolean - indicates if observations and forcing
+#' should be detrended linearly before applying the Bayesian fit.
 #' @param config_file Path to config file or full config list.
 #' @param config Name of config to use.
-#' @return Object of class `ebm_fit_result`, inherits from `mcmc_result`. In addition contains an entry
+#' @return Object of class `ebm_fit_result`, inherits from `mcmc_result`.
+#' In addition contains an entry
 #' *  `meta`: list with entries
 #'     + `n_boxes`
 #'     + `start_year`
@@ -32,7 +34,7 @@ ebm_fit <- function(obs, forc, n_boxes,
                     start_year = NULL,
                     end_year = NULL,
                     detrending = FALSE,
-                    config_file = "ebm_fit_config.yml",
+                    config_file = system.file('extdata/ebm_fit_config.yml', package = 'ClimBayes'),
                     config = "experimental"
                     ) {
 
@@ -46,6 +48,7 @@ ebm_fit <- function(obs, forc, n_boxes,
 
   if(detrending) {
    obs_vec <- detrend(obs_vec)
+   forc_vec <- detrend(forc_vec)
   }
 
   params <- list(

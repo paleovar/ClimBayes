@@ -7,21 +7,21 @@
 solve_ebm_wrapper(X, params)
 }
 \arguments{
-\item{X:}{vector of parameter values.}
+\item{X}{vector of parameter values.}
 
-\item{params:}{List of parameters.
+\item{params}{List of parameters.
 Relevant parameters:
 \itemize{
 \item \code{X_names}: parameter names corresponding to the values in \code{X}
-(e.g. the default for a one-box model will be \code{X_names = c("lambda1", "F0")},
-and \code{X} is of length two)
+(e.g. the default for a one-box model will be \code{X_names = c("lambda1", "T0", "F0")},
+and \code{X} is of length three)
 default values of parameters which are not estimated (e.g.
 \code{Cap_default}),
 \item \code{forc_vals} (vector of forcing values)
 }}
 }
 \value{
-: Vector of EBM solution.
+Vector of EBM solution.
 }
 \description{
 General EBM solver which extracts correct arguments for \code{solve_ebm}

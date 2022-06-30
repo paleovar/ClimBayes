@@ -16,6 +16,9 @@ the following entries are required:
 \item \code{n_chains}: Number of chains
 }}
 }
+\value{
+list of chains, each element as returned from \code{MCMC_chain}
+}
 \description{
 Function to run several chains with dispersed starting points,
 possibly in parallel

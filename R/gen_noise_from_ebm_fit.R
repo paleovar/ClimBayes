@@ -21,16 +21,15 @@ gen_noise_from_ebm_fit <- function(n, res_list) {
   }
 
   # generate samples from noise with corresponding parameters
-  # first, find SD of the noise with RMSE function (sample SD = RMSE)
-  sd <- RMSE(res_list$input_params$y_obs, fit)
+  # first, find SD of the noise
+  sd_resid <- sd(res_list$input_params$y_obs - fit)
 
-  # generate noise with parameters equal to posterior medians
-  # (could be replaced by means, too)
+  # generate noise with parameters equal to posterior means
   lw <- get_post_means(res_list)
   lambda <- lw$lambda
   weights <- lw$weights
   # again call same function as above
   noise <- gen_noise(n, lambda, weights, res_list$input_params$n_years,
-                     0, sd)
+                     0, sd_resid)
   noise
 }

@@ -4,8 +4,16 @@
 \alias{plot_fit}
 \title{Function to plot observations and model fit from \code{ebm_fit}.}
 \usage{
-plot_fit(res_list, cred_int = TRUE, ebm_sol = NULL, text_size = 10,
-  line_size = 0.5, plot_forcing = FALSE, ...)
+plot_fit(
+  res_list,
+  cred_int = TRUE,
+  ebm_sol = NULL,
+  text_size = 10,
+  line_size = 0.5,
+  plot_forcing = FALSE,
+  subtract_mean = FALSE,
+  ...
+)
 }
 \arguments{
 \item{res_list}{Object of class \code{ebm_fit_result}.}
@@ -21,6 +29,8 @@ as solution + noise (see also the \code{tutorial}-vignette).}
 \item{line_size}{Line size in plot.}
 
 \item{plot_forcing}{Boolean to decide if forcing should be plotted below.}
+
+\item{subtract_mean}{Boolean to specify if overall mean of all time series should be subtracted before plotting}
 }
 \value{
 A ggplot if \code{plot_forcing = FALSE} and the output of \code{cowplot::plot_grid}

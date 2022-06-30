@@ -4,9 +4,17 @@
 \alias{noise_sensitivity}
 \title{Analyze influence of noise in observational data on parameter estimates}
 \usage{
-noise_sensitivity(sd_white_list, sd_ar1_list, reps, forc, vars,
-  start_year = NULL, end_year = NULL,
-  config_file = "ebm_fit_config_noise_sens.yml", config = "noise_sens")
+noise_sensitivity(
+  sd_white_list,
+  sd_ar1_list,
+  reps,
+  forc,
+  vars,
+  start_year = NULL,
+  end_year = NULL,
+  config_file = system.file("extdata/ebm_fit_config.yml", package = "ClimBayes"),
+  config = "noise_sens"
+)
 }
 \arguments{
 \item{sd_white_list}{Vector of SD values for white noise.}
@@ -22,6 +30,7 @@ noise_sensitivity(sd_white_list, sd_ar1_list, reps, forc, vars,
 \item lambda
 \item weights
 \item Cap
+\item T0
 \item F0
 }}
 
@@ -53,7 +62,7 @@ This is repeated for each combination of SDs in \code{sd_white_list} and \code{s
 Internally, the function uses \code{noise_sens_single_it}.
 }
 \examples{
-vars = list(lambda = 0.1, Cap = 10.1, weights = 1, F0 = 0)
+vars = list(lambda = 0.1, Cap = 10.1, weights = 1, T0 = 0, F0 = 0)
 noise_sensitivity(c(0, 0.1), c(0, 0.1), 10,
 forc = c(0, numeric(99) + 10), vars = vars)
 }

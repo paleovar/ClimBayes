@@ -75,7 +75,7 @@ plot_joint_posterior <- function(res_list,
                                     breaks=colourbar_breaks)
   }
 
-  gg + theme(legend.position = "none") -> gg2
+  gg + ggplot2::theme(legend.position = "none") -> gg2
   ggExtra::ggMarginal(gg, type="histogram", size = text_size, fill = "firebrick") -> ggjoint
   # ggMarginal(gg2, type="histogram", size = text_size, fill = "firebrick") -> ggjoint2
   return(ggjoint)

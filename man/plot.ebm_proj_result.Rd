@@ -4,8 +4,13 @@
 \alias{plot.ebm_proj_result}
 \title{Plot function for class \code{ebm_proj_result}}
 \usage{
-\method{plot}{ebm_proj_result}(res_list, line_size = 0.8,
-  text_size = 10, cred_int = TRUE, plot_forcing = FALSE)
+\method{plot}{ebm_proj_result}(
+  res_list,
+  line_size = 0.8,
+  text_size = 10,
+  cred_int = TRUE,
+  plot_forcing = FALSE
+)
 }
 \arguments{
 \item{res_list}{Object of class \code{ebm_proj_result} (result of \code{ebm_projection}).}

@@ -15,6 +15,7 @@
 #' - lambda
 #' - weights
 #' - Cap
+#' - T0
 #' - F0
 #' @param start_year First of forcing considered (only relevant if `forc` is a data frame).
 #' @param end_year Last year of forcing considered (inclusive; only relevant if `forc` is a data frame).
@@ -29,14 +30,14 @@
 #' - (possibly further columns `delta_lambda2` etc.)
 #' @export
 #' @examples
-#' vars = list(lambda = 0.1, Cap = 10.1, weights = 1, F0 = 0)
+#' vars = list(lambda = 0.1, Cap = 10.1, weights = 1, T0 = 0, F0 = 0)
 #' noise_sensitivity(c(0, 0.1), c(0, 0.1), 10,
 #' forc = c(0, numeric(99) + 10), vars = vars)
 noise_sensitivity <- function(sd_white_list, sd_ar1_list,
                               reps,
                               forc, vars,
                               start_year = NULL, end_year = NULL,
-                              config_file = "ebm_fit_config_noise_sens.yml",
+                              config_file = system.file('extdata/ebm_fit_config.yml', package = 'ClimBayes'),
                               config = "noise_sens") {
 
   # try all combinations of SD values in both lists
@@ -60,7 +61,6 @@ noise_sensitivity <- function(sd_white_list, sd_ar1_list,
     res_list <- noise_sens_single_it(forc, vars, sd_white, sd_ar1,
               start_year, end_year,
               config_file, config)
-    print(res_list)
 
     # compute errors and store them in results data frame
     for(j in 1:length(vars$lambda)) {

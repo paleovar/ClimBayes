@@ -4,8 +4,16 @@
 \alias{plot_marginals}
 \title{Plot function for marginal posteriors of all estimated parameters.}
 \usage{
-plot_marginals(res_list, text_size = 10, line_size = 0.5,
-  return_all = FALSE, ...)
+plot_marginals(
+  res_list,
+  text_size = 10,
+  line_size = 0.5,
+  return_all = FALSE,
+  adjust_density = 3,
+  cols = c(Prior = "dodgerblue3", Posterior = "firebrick"),
+  labs_dict = NULL,
+  ...
+)
 }
 \arguments{
 \item{res_list}{Object of class \code{ebm_fit_result}.}
@@ -16,6 +24,12 @@ plot_marginals(res_list, text_size = 10, line_size = 0.5,
 
 \item{return_all}{Boolean to choose if the plots of the marginal posteriors of
 single parameters should be returned separately in a list.}
+
+\item{adjust_density}{smoothing parameter, passed on to parameter \code{adjust} in \code{geom_line},
+used in combination with \code{stat="density"}}
+
+\item{labs_dict}{dictionary of axis labels; if NULL, created automatically;
+format: e.g. \code{labs_dict[["lambda1"]]} contains label for \code{lambda1}.}
 }
 \value{
 Grid of marginal posteriors (result from \code{cowplot::plot_grid}) if

@@ -1,11 +1,6 @@
-# This is the configuration file for the ... package
-# In general, this configuration does not need any editing to use the package
-#
-# Note: Please enter all numbers as floats, e.g. for 1 enter 1.0
-# Further, yaml DOES NOT support scienctific notation,
-# e.g. for "1e3" enter "1000.0" instead
-
 # test configuration by Maybritt Schillinger
+# used for testthat tests
+# only small number of samples to make tests computationally feasible
 test_default:
   # specification of additional EBM parameters
   # can either be 'estimate' or 'fixed'
@@ -14,6 +9,8 @@ test_default:
   parameters:
     # heat capacity
     Cap: fixed
+    # initial temperature parameter
+    T0: estimate
     # initial forcing parameter
     F0: estimate
     # weights between feedback parameters
@@ -22,6 +19,7 @@ test_default:
   # default values for parameters
   # necessary if parameters above are set to 'fixed'
   parameter_defaults:
+    T0: 0
     F0: 0
     Cap: 10.1
     two_box:
@@ -80,11 +78,19 @@ test_default:
         two_box:
         - 2
         - 2
+        three_box:
+        - 2
+        - 2
+        - 2
       weights:
         two_box:
         - 2
-        F0: 2
-        Cap: 2
+        three_box:
+        - 2
+        - 2
+      T0: 2
+      F0: 2
+      Cap: 2
     beta_shape2:
       lambda:
         one_box:
@@ -92,46 +98,44 @@ test_default:
         two_box:
         - 2
         - 2
+        three_box:
+        - 2
+        - 2
+        - 2
       weights:
         two_box:
         - 2
-        F0: 2
-        Cap: 2
+        three_box:
+        - 2
+        - 2
+      T0: 2
+      F0: 2
+      Cap: 2
     # bounds for prior intervals
     one_box:
       lambda1_bounds:
-        - 0.001
-        - 1.0
+        - 0.005
+        - 2.0
     two_box:
       lambda1_bounds:
-        - 0.001
-        - 0.1
+        - 0.2
+        - 2.0
       lambda2_bounds:
-        - 0.1
-        - 5.0
+        - 0.005
+        - 0.2
     three_box:
       lambda1_bounds:
-        - 0.001
-        - 0.01
+        - 0.2
+        - 2.0
       lambda2_bounds:
-        - 0.01
-        - 0.1
+        - 0.02
+        - 0.2
       lambda3_bounds:
-        - 0.1
-        - 5.0
-    four_box:
-      lambda1_bounds:
-        - 0.001
-        - 0.01
-      lambda2_bounds:
-        - 0.01
-        - 0.1
-      lambda3_bounds:
-        - 0.1
-        - 1.0
-      lambda4_bounds:
-        - 1.0
-        - 5.0
+        - 0.005
+        - 0.02
+    T0_bounds:
+      - -1.0
+      - 1.0
     F0_bounds:
       - -2.0
       - 2.0
@@ -155,9 +159,10 @@ test_default:
         one_box:
           - 0.0001
         two_box:
-          - 0.00001
           - 0.0001
+          - 0.00001
       weights: 0.001
+      T0: 0.01
       F0: 0.01
       Cap: 0.1
     # weighting factor in adaptive covariance scheme, between 0 and 1
@@ -168,6 +173,8 @@ test_default:
     burn_in_proportion: 2.0
     # number of chains
     n_chains: 2.0
+    # buffer for start points of chains, in percentage of prior interval
+    chain_start_buffer: 0.0
     # should sampling continue until performance criteria are met?
     dynamic_termination: FALSE
     # number of additional samples to compute until convergence is evaluated

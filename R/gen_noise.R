@@ -12,7 +12,7 @@
 #' # only noisy time series with a bit of correlation
 #' as.vector(gen_noise(1, 0.1, 1, 51, 0.1, 0.3))
 #' # fit plus noise
-#' solve_ebm(0.1, 1, 0, 10, c(0, rep(5,50))) + as.vector(gen_noise(1, 0.1, 1, 51, 0.1, 0.3))
+#' solve_ebm(0.1, 1, 0, 0, 10, c(0, rep(5,50))) + as.vector(gen_noise(1, 0.1, 1, 51, 0.1, 0.3))
 #' @export
 gen_noise <- function(n, lambda, weights, n_years, sd_white, sd_ar1) {
 

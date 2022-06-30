@@ -1,6 +1,12 @@
 ---
 title: "Intro to ClimBayes"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
+vignette: >
+  %\VignetteIndexEntry{Tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
@@ -10,37 +16,37 @@ library(ClimBayes)
 
 ## This vignette
 
-This vignette is a tutorial for the `ClimBayes` package. It provides explanations on how Bayesian inference for multibox energy balance models (EBMs) is implemented and how it can be used to study temperature time series. Please refer to the `README` of this package as well as the submitted manuscript ... for all details.
+This vignette is a tutorial for the `ClimBayes` package. It provides explanations on how Bayesian inference for multibox energy balance models (EBMs) is implemented and how it can be used to study temperature time series. Please refer to the `README` of this package as well as the manuscript submitted to Chaos for all details.
 
 ### Multibox EBMs
 
 Consider the most simple zero-dimensional climate model for the global annual mean surface temperature $T$
 
-$$\frac{dT}{dt}(t) =  - \lambda T(t) + \frac{1}{C} F(t)$$,
+$$\frac{dT}{dt}(t) =  - \lambda T(t) + \frac{1}{C} F(t),$$
 
-where $\lambda$ is a climatic feedback parameter (the inverse of the characteristic timescale) and $F$ is the external forcing.
+where $\lambda$ is a climatic feedback parameter (the inverse of the characteristic timescale) and $F$ is the external forcing. 
 
 It has the well-known solution
 $$ T(t) = \frac{1}{C} \int_{- \infty}^t R(t-s) F(s) ds$$ 
 with the response function
  $$R(t) = e^{-t \lambda}.$$
 
-This model can be generalized to a multibox model by adding additional layers, characterized by their heat capacities. Typically, these layers are introduced to model the influence of the deep ocean (with a larger heat capacity) on the surface temperature. The surface temperature of a generic $N$-box model has the solution
+This model can be generalized to a multibox model by adding additional layers, characterized by their heat capacities. Typically, these layers are introduced to model the influence of the deep ocean (with a larger heat capacity) on the surface temperature. Neglecting internal variations and measurement errors, the surface temperature of a generic $N$-box model has the solution
 
-$$ T_{1,F}(t) = \frac{1}{C_1} \int_{- \infty}^t R(t-s) F(s) ds, $$
+$$ T_{1, F}(t) = \frac{1}{C_1} \int_{- \infty}^t R(t-s) F(s) ds, $$
 
 with response function 
 $$ R(t) = \sum_{k=1}^N w_k e^{-t \lambda_k}.$$
 $C_1$ is the heat capacity of the surface layer and $\lambda_k$ gives $N$ feedback parameters (their inverses are $N$ characteristic timescales), weighted with $w_k$ and $w_1 + ...+ w_N=1$.
 
-The `ClimBayes` package estimates the parameters $\lambda_k$ and $w_k$ as well as an initial forcing parameter $F_0$ by fitting multibox models to temperature data. Note that in the special case $N = 1$, there is only $\lambda_1$ and $w_1 = 1$, hence $w_1$ does not need to be estimated. If $N > 1$, it suffices to estimate $w_2,...,w_N$ and then $w_1 = 1 - (w_2 + ... + w_N)$.
+The `ClimBayes` package estimates the parameters $\lambda_k$ and $w_k$ as well as an initial temperature $T_0$ and an initial forcing parameter $F_0$ by fitting multibox models to temperature data. Note that in the special case $N = 1$, there is only $\lambda_1$ and $w_1 = 1$, hence $w_1$ does not need to be estimated. If $N > 1$, it suffices to estimate $w_1,...,w_{N-1}$ and then $w_N = 1 - (w_1 + ... + w_{N-1})$.
 
 
 ### Bayesian inference
 
 Bayesian inference aims to infer the posterior distribution of uncertain parameters conditioned on observational data. Here, it is used to compute the marginal posteriors of the EBM parameters and, hence, the best model fit. To this end, the implemented Bayesian approach combines the energy balance model, observational data and prior information on parameters via Bayes theorem. Computationally, a Metropolis-Hastings algorithm is used to find the optimal parameters. It is important to note, that "observational data" includes both the external forcing $F(t)$ as well as the observed temperature $T(t)$ and assumes a yearly resolution.
 
-To summarize, the `ClimBayes` package can be used to estimate the climate parameters of an $N-$box model given the input $F(t)$ and output $T(t)$ as well as prior information on the parameters. First, we show how the model can be used to generate synthetic data given a set of parameters and arbitrary external forcing. Second, we explain how to perform this estimate using the HadCRUT4 data set and PMIP3 forcing reconstructions. The `config_file`-vignette additionally explains how own data sets can be included and documented in `*config.yml`. 
+To summarize, the `ClimBayes` package can be used to estimate the climate parameters of an $N-$box model given the input $F(t)$ and output $T(t)$ as well as prior information on the parameters. First, we show how the model can be used to generate synthetic data given a set of parameters and arbitrary external forcing. Second, we explain how to perform this estimate using the HadCRUT5 data set and PMIP3 forcing reconstructions. The `config_file`-vignette additionally explains how own data sets can be included and documented in `*config.yml`. 
 
 ## Example: Synthetic data
 
@@ -51,7 +57,8 @@ forcing <- c(0, rep(3, 50))
 lambda <- 0.3
 sd_white <- 0.05
 # calculate solution for 1-bx model with given parameters
-sol <- solve_ebm(lambda, weights = 1, F0 = 0, Cap = 10.1, forc_vals = forcing) 
+sol <- solve_ebm(lambda, weights = 1, T0 = 0, F0 = 0, Cap = 10.1, 
+                 forc_vals = forcing) 
 noise <- rnorm(51, 0, sd_white)
 
 obs <- sol + noise
@@ -65,11 +72,13 @@ legend(x = "bottomright",          # Position
  
 ```
 
-Next, we use the `ebm_fit()`-function to estimate the parameters of the generated data set. As an input, the `ebm_fit()`-function takes the observational data (i.e. synthetically generated time series) and the step-function forcing. Moreover, the number of boxes `n_boxes` can be specified. The argument `config_file` specifies the path to the config file and `config = "experimental"` determines the config parameters we've chosen for quick and easy tries. Config files are explained in more detail in the `config`-vignette.
+Next, we use the `ebm_fit()`-function to estimate the parameters of the generated data set. As an input, the `ebm_fit()`-function takes the observational data (i.e. synthetically generated time series) and the step-function forcing. Moreover, the number of boxes `n_boxes` can be specified. The argument `config_file` specifies the path to the config file and `config = "experimental"` determines the config parameters we've chosen for quick and easy tries. Note that both `config_file = system.file('extdata/ebm_fit_config.yml', package = 'ClimBayes')` and `config = "experimental"` are also the default settings. Config files are explained in more detail in the `config`-vignette.
 
 ```{r fit-synth}
-fit <- ebm_fit(obs, forcing, n_boxes = 1, 
-               config_file = "../ebm_fit_config.yml", 
+fit <- ebm_fit(obs, forcing, 
+               n_boxes = 1, 
+               detrending = FALSE,
+               config_file = system.file('extdata/ebm_fit_config.yml', package = 'ClimBayes'), 
                config = "experimental")
 ```
 
@@ -98,7 +107,7 @@ Moreover, the forcing time series can be easily included into the plot:
 plot_fit(fit, plot_forcing=T)
 ```
 
-From the above plotted marginals or the print-out, we observe that the estimated parameter `lambda1` is close to the data-generating parameter $\lambda = 0.3$. It is not exactly the same as we added white noise to the data before. The plot method shows the fit as well as marginal posteriors for all estimated parameters. The class objects are nested lists and contain additional information. For example, `fit$posteriors$parameters` gives the posterior medians, means and variances of all estimated parameters.
+From the above plotted marginals as well as the print-out, we observe that the estimated parameter $\lambda1$ is close to the data-generating parameter $\lambda = 0.3$. It is not exactly the same as we added white noise to the data before. The plot method shows the fit as well as marginal posteriors for all estimated parameters. The class objects are nested lists and contain additional information. For example, `fit$posteriors$parameters` gives the posterior medians, means and variances of all estimated parameters.
 
 ```{r}
 print(fit$posteriors$parameters$lambda1)
@@ -106,7 +115,7 @@ print(fit$posteriors$parameters$lambda1)
 
 ## Example with historical data
 
-As a real-world example, we load HadCRUT4 observational data and the forcing reconstructions from Schmidt et al. Please find all references in the `README`. First, we load the data and then call the `ebm_fit` function. Most conveniantly, observations and forcings should be provided as data frames with columns `year` and `temperature` / `forcing`. Additionally, the first and last year of the considered period for the fit can be adjusted.
+As a real-world example, we load HadCRUT5 observational data and the forcing reconstructions from Schmidt et al. Please find all references in the `README`. First, we load the data and then call the `ebm_fit` function. Most conveniently, observations and forcings should be provided as data frames with columns `year` and `temperature` / `forcing`. Additionally, the first and last year of the considered period for the fit can be adjusted.
 
 ```{r hadcrut-example}
 data("hadcrut")
@@ -114,13 +123,11 @@ data("schmidt")
 fit_1box <- ebm_fit(hadcrut, schmidt, 
              n_boxes = 1,
              start_year = 1850, 
-             end_year = 2000,
-             config_file = "../ebm_fit_config.yml",
-             config = "experimental")
+             end_year = 2000)
 plot(fit_1box)
 ```
 
-To compare the one and two box model, we change the parameter `n_boxes` and visualize the differences using `plot_one_vs_two_box()`.
+To compare the one and two box model, we change the parameter `n_boxes` and visualize the differences using `plot_two_fits()`.
 
 ```{r hadcrut-ex2}
 data("hadcrut")
@@ -128,11 +135,9 @@ data("schmidt")
 fit_2box <- ebm_fit(hadcrut, schmidt, 
              n_boxes = 2,
              start_year = 1850, 
-             end_year = 2000,
-             config_file = "../ebm_fit_config.yml",
-             config = "experimental")
+             end_year = 2000)
 plot(fit_2box)
-plot_one_vs_two_box(fit_1box, fit_2box)
+plot_two_fits(fit_1box, fit_2box)
 ```
 
 ## Including own data sets
@@ -160,9 +165,12 @@ Using the same loading function from above and calling `ebm_fit` will fit the EB
 ```{r}
 load("../data/temperature_data.rda")
 load("../data/forcing_data.rda")
-ebm_fit(temperature_data, forcing_data, 1,
-        config_file = "../ebm_fit_config.yml",
-        config = "experimental")
+ebm_fit(temperature_data, forcing_data, 1)
+```
+
+```{r, include=FALSE}
+file.remove("../data/temperature_data.rda")
+file.remove("../data/forcing_data.rda")
 ```
 
 As above, the span of the fit can be specified.
@@ -170,19 +178,67 @@ As above, the span of the fit can be specified.
 ```{r}
 ebm_fit(temperature_data, forcing_data, 1,
         start_year = 1950,
-        end_year = 1970,
-        config_file = "../ebm_fit_config.yml",
-        config = "experimental")
+        end_year = 1970)
 ```
 
-- Optino 2: Run the function directly on the vectors of temperature and forcing data. However, specifying the start and end year won't be possible anymore. Nevertheless, this option might be more convenient when trying our synthetic data sets. 
+- Option 2: Run the function directly on the vectors of temperature and forcing data. However, specifying the start and end year won't be possible anymore. Nevertheless, this option might be more convenient when trying our synthetic data sets. 
 
 ```{r, eval = FALSE}
-ebm_fit(temp_vals, forc_vals, 1,
-        config_file = "../ebm_fit_config.yml",
-        config = "experimental")
+ebm_fit(temp_vals, forc_vals, 1)
 ```
 
+
+## Sampling of internal variability
+
+As described in the main manuscript, the above multibox EBM can be extended to a stochastic model by adding random white noise forcing that represents weather fluctuations. Then, the surface temperature response is typically partitioned into internal and externally-forced components:
+
+$$ T_1(t) = T_{1,F}(t) + T_{1,I}(t) = \int_{- \infty}^t R(t-s) \frac{1}{C_1} F(s) ds + \int_{- \infty}^t R(t-s) \frac{\sigma_W}{C_1} dW(s) $$
+
+The internal fluctuations $T_{1,I}(t)$ are described by an Itô-integral over the Wiener process $W(s)$ and $\sigma_W$ gives the standard deviation of a white noise process (see main manuscript for details). ClimBayes allows for sampling from these internal variations using `ClimBayes::gen_noise_from_ebm_fit())`, as shown in the below example. 
+
+```{r intvar}
+library(tidyr)
+library(tibble)
+library(ggplot2)
+
+#generate samples of internal variability
+noise2 <- ClimBayes::gen_noise_from_ebm_fit(3, fit_2box)
+
+#prepare data table for plotting
+noise_df2 <- as.data.frame(t(noise2))
+noise_df2 <- as.data.frame(apply(noise_df2, 2, 
+                          function(x) x + fit_2box$posteriors$model_fit$mean))
+noise_df2$year <- 1850:2000
+tidyr::pivot_longer(noise_df2, cols = starts_with("V"), 
+                    names_to = "realisation", values_to = "y") ->
+  noise_df2
+fit_df = data.frame(year = 1850:2000, y = fit_2box$posteriors$model_fit$mean) %>%
+  tibble::add_column(realisation="2-box")
+sol_df = data.frame(year = 1850:2000, y = fit_2box$input_params$y_obs) %>%
+  tibble::add_column(realisation="Observation")
+my_colors <- RColorBrewer::brewer.pal(6, "Purples")[4:6]
+
+#plot
+ggplot2::ggplot(rbind(noise_df2, sol_df, fit_df)) +
+  geom_line(aes(x = year, y = y, col=realisation)) +
+  labs(x = "Time (yr CE)", y = "Temperature anomaly (K)") +
+  scale_x_continuous(expand=c(0,0)) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  scale_color_manual(values=c("Observation"="darkgrey",
+                              "2-box"="firebrick",
+                              "V1"=my_colors[1],
+                              "V2"=my_colors[2],
+                              "V3"=my_colors[3]),
+                     breaks=c("Observation","2-box","V1","V2","V3"),
+                     labels = c("HadCRUT5", "forced", "forced+internal (E1)", 
+                              "forced+internal (E2)", "forced+internal (E3)")) +
+  theme(legend.position=c(0.25,0.8),
+        legend.box.background =  element_rect(colour = "black"),
+        legend.title= element_blank(),
+        legend.margin = ggplot2::margin(t=-0.02,l=0.05,b=0.05,r=0.1, unit='cm')) + 
+  theme(plot.margin = margin(0,0.5,0,0, "cm"))
+```
 
 ## Example for projections
 

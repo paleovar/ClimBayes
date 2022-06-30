@@ -18,7 +18,6 @@ log_likelihood <- function(X,
                            sol = NULL
 ) {
   y_obs = params$y_obs
-
   meas_noise = params$meas_noise
 
   phi_x <- forward_op(X, params, sol = sol)

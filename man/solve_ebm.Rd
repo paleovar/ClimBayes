@@ -4,7 +4,7 @@
 \alias{solve_ebm}
 \title{ODE solver for linear multibox EBMs}
 \usage{
-solve_ebm(lambda, weights, F0, Cap, forc_vals)
+solve_ebm(lambda, weights, T0, F0, Cap, forc_vals)
 }
 \arguments{
 \item{lambda:}{Vector of values for feedback parameters, one for each box}
@@ -12,9 +12,11 @@ solve_ebm(lambda, weights, F0, Cap, forc_vals)
 \item{weights:}{Vector of weights values, one for each box;
 should sum up to 1, otherwise an error is thrown.}
 
-\item{F0:}{Initial forcing value in $W / m^2$.}
+\item{T0:}{Initial temperature value in Kelvin.}
 
-\item{Cap:}{Heat capacity in $\mathrm{W yr m^{−2} K^{−1}}$.}
+\item{F0:}{Initial forcing value in W/m^2.}
+
+\item{Cap:}{Heat capacity in W yr m^(−2) K^(−1).}
 
 \item{forc_vals:}{Vector of forcing values (yearly data),
 anomalies w.r.t. first data point.}
@@ -24,12 +26,12 @@ anomalies w.r.t. first data point.}
 anomalies w.r.t. first data point.
 }
 \description{
-Solves the linear multibox EBMs for a vector of $\lambda$ and weights values.
+Solves the linear multibox EBMs for a vector of lambda and weights values.
 }
 \examples{
 # Response to step increase in forcing
 lambda <- 0.1
 weights <- 1 # in one-box model, weights are always one
 forc_vals <- c(0, numeric(99) + 10)
-solve_ebm(0.1, 1, 0, 10.1, forc_vals)
+solve_ebm(0.1, 1, 0, 0, 10.1, forc_vals)
 }

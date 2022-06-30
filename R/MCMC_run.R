@@ -45,7 +45,7 @@ MCMC_run <- function(params, diagnostics = TRUE) {
   if(params$noise_process == "iterative_correlated") {
     cat("Starting first iteration")
 
-    # --- setup noise parameters for first iteration ---
+    # # --- setup noise parameters for first iteration ---
     n_boxes <- sum(startsWith(X_names, "lambda"))
     lambda_noise <- numeric(n_boxes)
 
@@ -60,11 +60,11 @@ MCMC_run <- function(params, diagnostics = TRUE) {
       weights_noise <- rep(1/n_boxes, n_boxes)
     } else if (n_boxes > 1) {
       weights_noise = numeric(n_boxes - 1)
-      for(i in 2:n_boxes) {
+      for(i in 1:(n_boxes - 1)) {
         var_name = paste0("weights", i)
-        weights_noise[i - 1] = params[[paste0(var_name,"_default")]]
+        weights_noise[i] = params[[paste0(var_name,"_default")]]
       }
-      weights_noise = c(1 - sum(weights_noise), weights_noise)
+      weights_noise = c(weights_noise, 1 - sum(weights_noise))
     } else {
       weights_noise = 1
     }
@@ -89,6 +89,7 @@ MCMC_run <- function(params, diagnostics = TRUE) {
 
     # --- set parameters for next actual run ---
     params$M <- M
+    params$meas_noise = 0 # to do: make this a free parameter
 
     if(n_boxes == 1) {
       ind <- which(startsWith(X_names, "lambda"))
@@ -114,13 +115,12 @@ MCMC_run <- function(params, diagnostics = TRUE) {
           mean(samples[,startsWith(X_names, "weights"), drop = FALSE][,j]))
       } else {
         weights_mean = numeric(n_boxes - 1)
-        for(i in 2:n_boxes) {
+        for(i in 1:(n_boxes - 1)) {
           var_name = paste0("weights", i)
-          weights_mean[i - 1] = params[[paste0(var_name,"_default")]]
+          weights_mean[i] = params[[paste0(var_name,"_default")]]
         }
       }
-
-      weights_mean_full <- c(1 - sum(weights_mean), weights_mean)
+      weights_mean_full <- c(weights_mean, 1 - sum(weights_mean))
       if(sd(residual) - params$meas_noise > 0) {
         var_terms <- outer(weights_mean_full, weights_mean_full) *
           outer(lambda_mean, lambda_mean, function(x, y) 1/(x+y))
@@ -184,14 +184,20 @@ MCMC_run <- function(params, diagnostics = TRUE) {
     if(n_chains == 1) {
       stop("Need at least two chains for dynamic termination.")
     }
+    pgd <- purrr::possibly(coda::gelman.diag, list(mpsrf = NA), quiet = FALSE)
+
     MCSE_combined <- as.vector(batchmeans::bmmat(long_chain)[, "se"])
     a = dof_MCSE(nrow(long_chain))
 
     n = nrow(chain_list_sel[[1]]) #number of samples in each chain
     split_chains <- c(lapply(chain_list_sel, function(chain) chain[1:floor(n/2), ]),
                       lapply(chain_list_sel, function(chain) chain[(floor(n/2) + 1):n, ]))
-    gelman_diag <- coda::gelman.diag(lapply(split_chains, coda::mcmc), autoburnin = FALSE)
+    gelman_diag <- pgd(lapply(split_chains, coda::mcmc), autoburnin = FALSE)
 
+    if(any(is.na(gelman_diag))) {
+      warning("Cannot compute gelman diagnostic. No dynamic termination.")
+      break
+    }
     if(d == 1) {
       R_hat <- gelman_diag$psrf[2]
     } else {
@@ -279,11 +285,15 @@ MCMC_run <- function(params, diagnostics = TRUE) {
   for (j in 1:d) {
     var_name = X_names[j]
     est_mean = mean(long_chain[, j])
-    med = median(long_chain[, j])
-    variance <- var(long_chain[, j])
+    quants = quantile(long_chain[, j], probs =  c(0.025, 0.5, 0.975))
+    med = as.numeric(quants[2])
+    variance = var(long_chain[, j])
+
     parameter_results[[var_name]] <- list(median = med,
                                           mean = est_mean,
-                                          variance = variance)
+                                          variance = variance,
+                                          lower_quant = as.numeric(quants[1]),
+                                          upper_quant = as.numeric(quants[3]))
   }
 
   temp_quantiles <- apply(long_chain_sol, 2, quantile,
@@ -313,6 +323,7 @@ MCMC_run <- function(params, diagnostics = TRUE) {
 
   if(diagnostics) {
     # additionally compute MCMC diagnostics
+    pgd <- purrr::possibly(coda::gelman.diag, list(mpsrf = NA), quiet = FALSE)
 
     MCMC_diag <- list()
 
@@ -331,9 +342,11 @@ MCMC_run <- function(params, diagnostics = TRUE) {
       split_chains <- c(lapply(chain_list_sel, function(chain) chain[1:floor(n/2), ]),
                         lapply(chain_list_sel, function(chain) chain[(floor(n/2) + 1):n, ]))
 
-      gelman_diag <- coda::gelman.diag(lapply(split_chains, coda::mcmc), autoburnin = FALSE)
-      MCMC_diag[['gelman_diag_psrf']] <- gelman_diag$psrf
-      MCMC_diag[['gelman_diag_mpsrf']] <- gelman_diag$mpsrf
+      gelman_diag <- pgd(lapply(split_chains, coda::mcmc), autoburnin = FALSE)
+      if(!any(is.na(gelman_diag))) {
+        MCMC_diag[['gelman_diag_psrf']] <- gelman_diag$psrf
+        MCMC_diag[['gelman_diag_mpsrf']] <- gelman_diag$mpsrf
+      }
     }
 
     MCMC_diag[['ESS_combined']] <- ESS_combined
