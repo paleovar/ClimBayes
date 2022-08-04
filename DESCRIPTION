@@ -14,7 +14,7 @@ Imports:
     cowplot,
     doParallel,
     doRNG,
-    rmarkdown
+    rmarkdown,
     dplyr,
     english,
     foreach,
